@@ -6,6 +6,7 @@ import 'dotenv/config'
 import * as rTracer from 'cls-rtracer'
 import { logger, middlewareLogger } from '@root/config/logger'
 import { HTTP_STATUS } from '@root/utils/constants'
+import { getAllTransactionsForBlocks } from '@root/utils/transactions'
 
 const app = express()
 
@@ -31,6 +32,8 @@ app.use((error, req, res, next) => {
 const port = process.env.PORT || 3000
 const host = process.env.HOST || 'localhost'
 
+// setInterval(getCurrentBlock, 10000)
+getAllTransactionsForBlocks(199650118, 199650140).then((transactions) => console.log(transactions))
 app.listen(port, () => {
   logger.info(`Listening: http://${host}:${port}`)
 })
