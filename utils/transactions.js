@@ -32,7 +32,7 @@ export const getAllTransactionsForBlocks = async (startBlockSlot, endBlockSlot) 
             listTxs.push({
               sender,
               recipient,
-              amountTransferred,
+              amount: amountTransferred,
               transactionFee,
               signature,
             })
@@ -58,16 +58,24 @@ export const getCurrentBlock = async () => {
   BlockScaned.find()
     .then((res) => {
       console.log(res[0].lastBlock)
-      getAllTransactionsForBlocks(Number(res[0].lastBlock), Number(res[0].lastBlock)).then((transactions) => {
-        console.log(transactions)
-        Transactions.create(transactions).then((tran) => {
+      getAllTransactionsForBlocks(Number(res[0].lastBlock), Number(res[0].lastBlock))
+        .then((transactions) => {
+          console.log(transactions)
+          Transactions.create(transactions).then((tran) => {
+            BlockScaned.findOneAndUpdate({ _id: res[0]._id }, { lastBlock: Number(res[0].lastBlock) + 1 }).then(() => {
+              console.log('update Block Scaned')
+            })
+          })
+        })
+        .catch((err) => {
           BlockScaned.findOneAndUpdate({ _id: res[0]._id }, { lastBlock: Number(res[0].lastBlock) + 1 }).then(() => {
             console.log('update Block Scaned')
           })
         })
-      })
     })
+
     .catch((err) => {
+      console.log('asdfasdf')
       console.error(err)
     })
 }
