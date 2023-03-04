@@ -1,6 +1,8 @@
 import { Connection } from '@solana/web3.js'
 import { findUserByWallet } from '@root/repository/userRepository'
 import bs58 from 'bs58'
+import BlockScaned from '@root/models/BlockScaned'
+import Transactions from '@root/models/Transactions'
 
 const connection = new Connection('https://api.devnet.solana.com')
 export const getAllTransactionsForBlocks = async (startBlockSlot, endBlockSlot) => {
@@ -53,10 +55,17 @@ export const getAllTransactionsForBlocks = async (startBlockSlot, endBlockSlot) 
 
 // getAllTransactionsForBlocks(199626252, 199626252).then((transactions) => console.log(transactions))
 export const getCurrentBlock = async () => {
-  connection
-    .getSlot({ commitment: 'finalized' })
-    .then((slot) => {
-      console.log(`Current block: ${slot}`)
+  BlockScaned.find()
+    .then((res) => {
+      console.log(res[0].lastBlock)
+      getAllTransactionsForBlocks(Number(res[0].lastBlock), Number(res[0].lastBlock)).then((transactions) => {
+        console.log(transactions)
+        Transactions.create(transactions).then((tran) => {
+          BlockScaned.findOneAndUpdate({ _id: res[0]._id }, { lastBlock: Number(res[0].lastBlock) + 1 }).then(() => {
+            console.log('update Block Scaned')
+          })
+        })
+      })
     })
     .catch((err) => {
       console.error(err)
