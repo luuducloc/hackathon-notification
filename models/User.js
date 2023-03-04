@@ -1,14 +1,17 @@
-import mongoose from "mongoose";
-import db from "@root/config/mongodb"
+import mongoose from 'mongoose'
+import db from '@root/config/mongodb'
 
-const User = new mongoose.Schema({
+const User = new mongoose.Schema(
+  {
     wallet: {
-        type: String,
-        unique: true
+      type: String,
+      unique: true,
     },
     deviceId: {
-        type: String
-    }
-})
+      type: String,
+    },
+  },
+  { timestamps: true }
+)
 
 export default db.model('User', User)
